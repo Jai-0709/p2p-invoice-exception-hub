@@ -86,16 +86,7 @@ const KPICard: React.FC<KPICardProps> = ({ label, value, sub, icon, variant = ''
   <div className={`kpi-card kpi-${variant}`} onClick={onClick} style={onClick ? { cursor: 'pointer' } : {}}>
     <div className="kpi-header">
       <span className="kpi-label">{label}</span>
-      <div className="kpi-icon" style={{
-        background: variant === 'critical' ? 'rgba(239,68,68,0.12)' :
-          variant === 'high' ? 'rgba(249,115,22,0.12)' :
-          variant === 'warning' ? 'rgba(234,179,8,0.12)' :
-          variant === 'success' ? 'rgba(34,197,94,0.12)' : 'rgba(37,99,235,0.12)',
-        color: variant === 'critical' ? '#f87171' :
-          variant === 'high' ? '#fb923c' :
-          variant === 'warning' ? '#facc15' :
-          variant === 'success' ? '#4ade80' : '#60a5fa',
-      }}>
+      <div className={`kpi-icon kpi-icon-${variant || 'default'}`}>
         {icon}
       </div>
     </div>
@@ -109,11 +100,12 @@ const CustomTooltip = ({ active, payload, label }: any) => {
   if (!active || !payload?.length) return null;
   return (
     <div style={{
-      background: 'var(--bg-card)',
+      background: '#ffffff',
       border: '1px solid var(--border-normal)',
       borderRadius: 8,
       padding: '8px 12px',
       fontSize: 12,
+      boxShadow: 'var(--shadow-md)',
     }}>
       {label && <div style={{ fontWeight: 600, marginBottom: 4, color: 'var(--text-primary)' }}>{label}</div>}
       {payload.map((p: any) => (

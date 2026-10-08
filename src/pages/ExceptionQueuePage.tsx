@@ -314,7 +314,7 @@ export const ExceptionQueuePage: React.FC = () => {
                           <span style={{
                             fontSize: 11,
                             fontWeight: 600,
-                            color: exc.ageingDays > 60 ? '#f87171' : exc.ageingDays > 30 ? '#fb923c' : exc.ageingDays > 15 ? '#facc15' : 'var(--text-primary)',
+                            color: exc.ageingDays > 60 ? '#dc2626' : exc.ageingDays > 30 ? '#ea580c' : exc.ageingDays > 15 ? '#d97706' : 'var(--text-primary)',
                           }}>
                             {exc.ageingDays}d
                           </span>

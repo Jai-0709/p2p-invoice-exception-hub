@@ -145,9 +145,9 @@ export const AppShell: React.FC<{ children: React.ReactNode }> = ({ children }) 
         <div className="topbar-actions">
           {/* Environment tag */}
           <span className="topbar-demo-pill" style={{
-            background: 'rgba(234,179,8,0.12)',
-            color: '#facc15',
-            border: '1px solid rgba(234,179,8,0.2)',
+            background: '#fef3c7',
+            color: '#b45309',
+            border: '1px solid #fde68a',
             borderRadius: 4,
             fontSize: 10,
             fontWeight: 700,

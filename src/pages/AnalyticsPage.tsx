@@ -15,11 +15,11 @@ import { formatCurrency, PRIORITY_COLORS, STATUS_COLORS, AGEING_COLORS } from '.
 const CustomTooltip = ({ active, payload, label }: any) => {
   if (!active || !payload?.length) return null;
   return (
-    <div style={{ background: 'var(--bg-card)', border: '1px solid var(--border-normal)', borderRadius: 8, padding: '8px 12px', fontSize: 12 }}>
+    <div style={{ background: '#ffffff', border: '1px solid var(--border-normal)', borderRadius: 8, padding: '8px 12px', fontSize: 12, boxShadow: 'var(--shadow-md)' }}>
       {label && <div style={{ fontWeight: 600, marginBottom: 4, color: 'var(--text-primary)' }}>{label}</div>}
       {payload.map((p: any) => (
-        <div key={p.name} style={{ color: p.color, display: 'flex', gap: 8 }}>
-          <div style={{ width: 8, height: 8, borderRadius: '50%', background: p.color, marginTop: 4, flexShrink: 0 }} />
+        <div key={p.name} style={{ color: p.color, display: 'flex', gap: 8, alignItems: 'center' }}>
+          <div style={{ width: 8, height: 8, borderRadius: '50%', background: p.color, flexShrink: 0 }} />
           {p.name}: <strong>{typeof p.value === 'number' && p.value > 1000 ? formatCurrency(p.value) : p.value}</strong>
         </div>
       ))}

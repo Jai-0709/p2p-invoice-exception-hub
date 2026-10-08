@@ -481,16 +481,22 @@ export const ExceptionDetailPage: React.FC = () => {
           {/* Section 8 – AI Assistant */}
           <div className="ai-panel" style={{ marginBottom: 16 }}>
             <div className="ai-panel-header">
-              <Brain size={18} color="#818cf8" />
+              <Brain size={18} color="var(--brand-secondary)" />
               <span style={{ fontWeight: 700, color: 'var(--text-primary)' }}>AI Exception Assistant</span>
               <span className="ai-badge">MOCK AI</span>
               <span style={{ fontSize: 10, color: 'var(--text-muted)', marginLeft: 4 }}>Deterministic · Grounded in exception data</span>
             </div>
 
             {exc.aiRecommendationStatus && exc.aiRecommendationStatus !== 'Pending' && (
-              <div style={{ marginBottom: 12, padding: '6px 12px', borderRadius: 6, fontSize: 11, fontWeight: 600,
-                background: exc.aiRecommendationStatus === 'Accepted' ? 'rgba(34,197,94,0.08)' : exc.aiRecommendationStatus === 'Rejected' ? 'rgba(239,68,68,0.08)' : 'rgba(234,179,8,0.08)',
-                color: exc.aiRecommendationStatus === 'Accepted' ? '#4ade80' : exc.aiRecommendationStatus === 'Rejected' ? '#f87171' : '#facc15',
+              <div style={{
+                marginBottom: 12,
+                padding: '6px 12px',
+                borderRadius: 6,
+                fontSize: 11,
+                fontWeight: 600,
+                background: exc.aiRecommendationStatus === 'Accepted' ? '#f0fdf4' : exc.aiRecommendationStatus === 'Rejected' ? '#fef2f2' : '#fffbeb',
+                color: exc.aiRecommendationStatus === 'Accepted' ? '#15803d' : exc.aiRecommendationStatus === 'Rejected' ? '#b91c1c' : '#b45309',
+                border: exc.aiRecommendationStatus === 'Accepted' ? '1px solid #bbf7d0' : exc.aiRecommendationStatus === 'Rejected' ? '1px solid #fecaca' : '1px solid #fde68a',
               }}>
                 AI Recommendation: {exc.aiRecommendationStatus}
               </div>
