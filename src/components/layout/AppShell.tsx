@@ -19,6 +19,7 @@ import {
 import { useAuthStore } from '../../store/authStore';
 import { useExceptionStore } from '../../store/exceptionStore';
 import { formatCurrency, formatDateTime } from '../../utils/formatting';
+import { SettingsModal } from '../modals/SettingsModal';
 
 const NAV_ITEMS = [
   { to: '/dashboard', label: 'Dashboard', icon: LayoutDashboard },
@@ -38,6 +39,7 @@ export const AppShell: React.FC<{ children: React.ReactNode }> = ({ children }) 
   const { kpis } = useExceptionStore();
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [notifOpen, setNotifOpen] = useState(false);
+  const [settingsOpen, setSettingsOpen] = useState(false);
   const location = useLocation();
   const navigate = useNavigate();
 
@@ -50,6 +52,7 @@ export const AppShell: React.FC<{ children: React.ReactNode }> = ({ children }) 
     if (path === '/exceptions') return [{ label: 'Home' }, { label: 'Exception Queue', active: true }];
     if (path.startsWith('/exceptions/')) return [{ label: 'Home' }, { label: 'Exception Queue', to: '/exceptions' }, { label: 'Exception Detail', active: true }];
     if (path === '/analytics') return [{ label: 'Home' }, { label: 'Analytics', active: true }];
+    if (path === '/settings') return [{ label: 'Home' }, { label: 'Settings', active: true }];
     return [{ label: 'Home' }, { label: path, active: true }];
   };
 
@@ -92,7 +95,15 @@ export const AppShell: React.FC<{ children: React.ReactNode }> = ({ children }) 
           ))}
 
           <span className="sidebar-section-label" style={{ marginTop: 12 }}>System</span>
-          <button className="sidebar-item" onClick={() => {}} title="Settings">
+          <button
+            id="sidebar-settings-btn"
+            className={`sidebar-item ${settingsOpen || location.pathname === '/settings' ? 'active' : ''}`}
+            onClick={() => {
+              setSettingsOpen(true);
+              setSidebarOpen(false);
+            }}
+            title="Settings"
+          >
             <Settings size={16} />
             Settings
           </button>
@@ -215,6 +226,9 @@ export const AppShell: React.FC<{ children: React.ReactNode }> = ({ children }) 
       <main className="main-content" onClick={() => notifOpen && setNotifOpen(false)}>
         {children}
       </main>
+
+      {/* Settings Modal */}
+      <SettingsModal isOpen={settingsOpen} onClose={() => setSettingsOpen(false)} />
     </div>
   );
 };

@@ -34,10 +34,18 @@ export const ExceptionQueuePage: React.FC = () => {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const {
-    filteredResult, filters, loadAll, applyFilters, doExport, isLoading, error, clearError,
+    exceptions, filteredResult, filters, loadAll, applyFilters, doExport, isLoading, error, clearError,
   } = useExceptionStore();
 
   const [showFilters, setShowFilters] = useState(false);
+
+  const statusCounts = React.useMemo(() => {
+    const counts: Record<string, number> = { '': exceptions.length };
+    exceptions.forEach(e => {
+      counts[e.status] = (counts[e.status] ?? 0) + 1;
+    });
+    return counts;
+  }, [exceptions]);
 
   useEffect(() => {
     // Apply URL params if present
@@ -139,9 +147,9 @@ export const ExceptionQueuePage: React.FC = () => {
               key={s}
               className={`btn btn-sm ${filters.status === s ? 'btn-primary' : 'btn-secondary'}`}
               onClick={() => applyFilters({ status: s as any, page: 1 })}
-              style={{ fontSize: 11, padding: '3px 10px', whiteSpace: 'nowrap' }}
+              style={{ fontSize: 11, padding: '4px 10px', whiteSpace: 'nowrap' }}
             >
-              {s || 'All'}
+              {s || 'All'} <span style={{ opacity: 0.75, fontSize: 10, marginLeft: 2 }}>({statusCounts[s] ?? 0})</span>
             </button>
           ))}
         </div>
@@ -350,6 +358,7 @@ export const ExceptionQueuePage: React.FC = () => {
               ) : (
                 filteredResult.data.map((exc) => {
                   const supplier = MOCK_SUPPLIERS.find(s => s.id === exc.supplierId);
+                  const owner = MOCK_USERS.find(u => u.id === exc.ownerId);
                   return (
                     <div
                       key={exc.id}
@@ -365,29 +374,44 @@ export const ExceptionQueuePage: React.FC = () => {
                           <span className={`badge badge-status-${exc.status.replace(/ /g, '-').toLowerCase()}`}>
                             {exc.status}
                           </span>
+                          <ChevronRight size={16} color="var(--text-muted)" style={{ marginLeft: 2 }} />
                         </div>
                       </div>
 
                       <div className="mobile-record-title">{exc.exceptionType}</div>
-                      
+
                       <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 12, color: 'var(--text-secondary)' }}>
-                        <span>🏢 {supplier?.name ?? exc.supplierId}</span>
-                        <span style={{ fontFamily: 'monospace', fontSize: 11 }}>PO: {exc.poId}</span>
+                        <span className="truncate">🏢 {supplier?.name ?? exc.supplierId}</span>
+                        <span style={{ fontFamily: 'monospace', fontSize: 11, flexShrink: 0, marginLeft: 8 }}>PO: {exc.poId}</span>
+                      </div>
+
+                      <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 11, color: 'var(--text-muted)' }}>
+                        <span>Plant {exc.plant} · {exc.companyCode}</span>
+                        <span>👤 {owner?.name ?? 'Unassigned'}</span>
                       </div>
 
                       <div className="mobile-record-footer">
                         <div className="mobile-record-exposure">
                           <span style={{ color: 'var(--text-muted)', fontSize: 11, marginRight: 4 }}>Exposure:</span>
-                          <strong>{exc.financialExposure > 0 ? formatCurrency(exc.financialExposure, exc.currency) : '£0.00'}</strong>
+                          <strong style={{ fontSize: 13, color: 'var(--text-primary)' }}>
+                            {exc.financialExposure > 0 ? formatCurrency(exc.financialExposure, exc.currency) : '£0.00'}
+                          </strong>
                         </div>
                         <div className="mobile-record-meta">
+                          <span style={{
+                            fontSize: 11,
+                            fontWeight: 600,
+                            color: exc.riskScore >= 75 ? 'var(--priority-critical)' : 'var(--text-secondary)',
+                          }}>
+                            Risk {exc.riskScore}
+                          </span>
                           <span style={{ fontSize: 11, color: exc.ageingDays > 30 ? 'var(--color-error)' : 'var(--text-muted)' }}>
                             {exc.ageingDays}d
                           </span>
                           {exc.slaBreached ? (
-                            <span className="badge badge-status-rejected">Breached</span>
+                            <span className="badge badge-status-rejected">⚠ Breached</span>
                           ) : (
-                            <span className="badge badge-status-resolved">On Track</span>
+                            <span className="badge badge-status-resolved">✓ On Track</span>
                           )}
                         </div>
                       </div>
