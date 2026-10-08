@@ -1814,6 +1814,118 @@ tbody tr:hover {
   border-left: 3px solid var(--brand-secondary);
 }
 
+/* ── Profile Dropdown Card ───────────────────────────────────── */
+.topbar-avatar-btn {
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform var(--transition-fast);
+}
+
+.topbar-avatar-btn:hover {
+  transform: scale(1.05);
+}
+
+.profile-dropdown-card {
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  width: 290px;
+  background: #ffffff;
+  border: 1px solid var(--border-normal);
+  border-radius: var(--border-radius-lg);
+  box-shadow: 0 16px 36px -4px rgba(0, 0, 0, 0.16), 0 0 0 1px rgba(0, 0, 0, 0.04);
+  z-index: 210;
+  padding: var(--space-4);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  animation: slideDownFade 0.18s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.profile-dropdown-header {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding-bottom: var(--space-3);
+  border-bottom: 1px solid var(--border-subtle);
+}
+
+.profile-dropdown-name {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--text-primary);
+  line-height: 1.2;
+}
+
+.profile-dropdown-role {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--brand-secondary);
+  margin-top: 2px;
+}
+
+.profile-dropdown-email {
+  font-size: 10px;
+  color: var(--text-muted);
+  margin-top: 2px;
+}
+
+.profile-dropdown-actions {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.profile-dropdown-switch-label {
+  font-size: 10px;
+  font-weight: 700;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-top: 2px;
+}
+
+.profile-dropdown-personas {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.profile-persona-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 8px;
+  border-radius: var(--border-radius-sm);
+  background: transparent;
+  border: 1px solid transparent;
+  cursor: pointer;
+  width: 100%;
+  transition: all var(--transition-fast);
+}
+
+.profile-persona-btn:hover {
+  background: var(--bg-surface);
+  border-color: var(--border-subtle);
+}
+
+.profile-persona-name {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.profile-persona-role {
+  font-size: 10px;
+  color: var(--text-muted);
+}
+
 /* ── Login Page ──────────────────────────────────────────────── */
 .login-page {
   min-height: 100vh;
@@ -2153,6 +2265,19 @@ tbody tr:hover {
     border-radius: var(--border-radius-lg) !important;
     box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.2), 0 8px 10px -6px rgba(0, 0, 0, 0.1) !important;
     z-index: 200 !important;
+    animation: slideDownFade 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  .profile-dropdown-card {
+    position: fixed !important;
+    top: calc(var(--topbar-height) + 8px) !important;
+    left: 16px !important;
+    right: 16px !important;
+    width: auto !important;
+    max-width: calc(100vw - 32px) !important;
+    border-radius: var(--border-radius-lg) !important;
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.2), 0 8px 10px -6px rgba(0, 0, 0, 0.1) !important;
+    z-index: 210 !important;
     animation: slideDownFade 0.2s cubic-bezier(0.16, 1, 0.3, 1);
   }
 

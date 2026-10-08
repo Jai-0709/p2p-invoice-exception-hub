@@ -88,17 +88,15 @@ export const LoginPage: React.FC = () => {
         </form>
 
         <div className="login-demo-hint">
-          <div className="login-demo-title">Demo Accounts · Click to fill</div>
+          <div className="login-demo-title">⚡ Instant Persona Login · Click any profile to enter</div>
           {MOCK_USERS.map((u) => (
-            <div key={u.id} className="login-demo-row" onClick={() => fillDemo(u)}>
-              <div>
+            <div key={u.id} className="login-demo-row" onClick={() => login(u.email, u.password)} title={`Log in as ${u.name}`}>
+              <div className="avatar avatar-sm" style={{ marginRight: 10, flexShrink: 0 }}>{u.avatar}</div>
+              <div style={{ flex: 1, minWidth: 0 }}>
                 <div className="login-demo-name">{u.name}</div>
                 <div className="login-demo-cred">{u.role} · {u.department}</div>
               </div>
-              <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
-                <span className="login-demo-cred">{u.email}</span>
-                <ChevronRight size={12} color="var(--text-muted)" />
-              </div>
+              <span className="badge badge-status-open" style={{ fontSize: 10, padding: '2px 8px', flexShrink: 0 }}>Enter →</span>
             </div>
           ))}
         </div>

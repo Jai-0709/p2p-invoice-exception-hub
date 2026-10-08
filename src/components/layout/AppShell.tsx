@@ -1,7 +1,3 @@
-// ============================================================
-// Layout – AppShell (Sidebar + TopBar + Content)
-// ============================================================
-
 import React, { useState } from 'react';
 import { NavLink, useLocation, useNavigate } from 'react-router-dom';
 import {
@@ -14,12 +10,11 @@ import {
   Menu,
   X,
   ChevronRight,
-  Settings,
 } from 'lucide-react';
 import { useAuthStore } from '../../store/authStore';
 import { useExceptionStore } from '../../store/exceptionStore';
+import { MOCK_USERS } from '../../data/users';
 import { formatCurrency, formatDateTime } from '../../utils/formatting';
-import { SettingsModal } from '../modals/SettingsModal';
 
 const NAV_ITEMS = [
   { to: '/dashboard', label: 'Dashboard', icon: LayoutDashboard },
@@ -35,11 +30,11 @@ const NOTIFICATIONS = [
 ];
 
 export const AppShell: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const { currentUser, logout } = useAuthStore();
+  const { currentUser, login, logout } = useAuthStore();
   const { kpis } = useExceptionStore();
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [notifOpen, setNotifOpen] = useState(false);
-  const [settingsOpen, setSettingsOpen] = useState(false);
+  const [profileOpen, setProfileOpen] = useState(false);
   const location = useLocation();
   const navigate = useNavigate();
 
@@ -52,7 +47,6 @@ export const AppShell: React.FC<{ children: React.ReactNode }> = ({ children }) 
     if (path === '/exceptions') return [{ label: 'Home' }, { label: 'Exception Queue', active: true }];
     if (path.startsWith('/exceptions/')) return [{ label: 'Home' }, { label: 'Exception Queue', to: '/exceptions' }, { label: 'Exception Detail', active: true }];
     if (path === '/analytics') return [{ label: 'Home' }, { label: 'Analytics', active: true }];
-    if (path === '/settings') return [{ label: 'Home' }, { label: 'Settings', active: true }];
     return [{ label: 'Home' }, { label: path, active: true }];
   };
 
@@ -94,29 +88,19 @@ export const AppShell: React.FC<{ children: React.ReactNode }> = ({ children }) 
             </NavLink>
           ))}
 
-          <span className="sidebar-section-label" style={{ marginTop: 12 }}>System</span>
-          <button
-            id="sidebar-settings-btn"
-            className={`sidebar-item ${settingsOpen || location.pathname === '/settings' ? 'active' : ''}`}
-            onClick={() => {
-              setSettingsOpen(true);
-              setSidebarOpen(false);
-            }}
-            title="Settings"
-          >
-            <Settings size={16} />
-            Settings
-          </button>
         </nav>
 
         <div className="sidebar-footer">
-          <div className="sidebar-user" onClick={() => logout()}>
+          <div className="sidebar-user" onClick={() => logout()} title="Click to log out">
             <div className="avatar">{currentUser?.avatar}</div>
             <div className="sidebar-user-info">
               <div className="sidebar-user-name">{currentUser?.name}</div>
               <div className="sidebar-user-role">{currentUser?.role}</div>
             </div>
-            <LogOut size={14} color="var(--text-muted)" />
+            <div style={{ display: 'flex', alignItems: 'center', gap: 4, color: 'var(--color-error)', fontSize: 11, fontWeight: 600 }}>
+              <LogOut size={13} />
+              <span>Exit</span>
+            </div>
           </div>
         </div>
       </aside>
@@ -249,8 +233,74 @@ export const AppShell: React.FC<{ children: React.ReactNode }> = ({ children }) 
             )}
           </div>
 
-          {/* User avatar */}
-          <div className="avatar" title={currentUser?.name}>{currentUser?.avatar}</div>
+          {/* User Profile & Quick Logout */}
+          <div className="relative">
+            <button
+              id="profile-btn"
+              className="topbar-avatar-btn"
+              onClick={() => {
+                setProfileOpen(!profileOpen);
+                setNotifOpen(false);
+              }}
+              title={`${currentUser?.name} (${currentUser?.role}) – Click to log out`}
+              aria-label="User profile and logout menu"
+            >
+              <div className="avatar">{currentUser?.avatar}</div>
+            </button>
+
+            {profileOpen && (
+              <>
+                <div
+                  className="notification-backdrop"
+                  onClick={() => setProfileOpen(false)}
+                />
+                <div className="profile-dropdown-card">
+                  <div className="profile-dropdown-header">
+                    <div className="avatar avatar-lg">{currentUser?.avatar}</div>
+                    <div style={{ minWidth: 0, flex: 1 }}>
+                      <div className="profile-dropdown-name truncate">{currentUser?.name}</div>
+                      <div className="profile-dropdown-role truncate">{currentUser?.role}</div>
+                      <div className="profile-dropdown-email truncate">{currentUser?.email}</div>
+                    </div>
+                  </div>
+
+                  <div className="profile-dropdown-actions">
+                    <button
+                      id="profile-logout-btn"
+                      className="btn btn-danger btn-sm w-full"
+                      onClick={() => {
+                        setProfileOpen(false);
+                        logout();
+                      }}
+                      style={{ justifyContent: 'center', gap: 6, fontWeight: 600, padding: '8px 12px' }}
+                    >
+                      <LogOut size={14} /> Log Out
+                    </button>
+                  </div>
+
+                  <div className="profile-dropdown-switch-label">Switch Persona:</div>
+                  <div className="profile-dropdown-personas">
+                    {MOCK_USERS.filter(u => u.id !== currentUser?.id).map(u => (
+                      <button
+                        key={u.id}
+                        className="profile-persona-btn"
+                        onClick={() => {
+                          login(u.email, u.password);
+                          setProfileOpen(false);
+                        }}
+                      >
+                        <div className="avatar avatar-sm">{u.avatar}</div>
+                        <div style={{ textAlign: 'left', minWidth: 0, flex: 1 }}>
+                          <div className="profile-persona-name truncate">{u.name}</div>
+                          <div className="profile-persona-role truncate">{u.role}</div>
+                        </div>
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              </>
+            )}
+          </div>
         </div>
       </header>
 
@@ -263,12 +313,9 @@ export const AppShell: React.FC<{ children: React.ReactNode }> = ({ children }) 
       )}
 
       {/* Main Content */}
-      <main className="main-content" onClick={() => notifOpen && setNotifOpen(false)}>
+      <main className="main-content" onClick={() => { notifOpen && setNotifOpen(false); profileOpen && setProfileOpen(false); }}>
         {children}
       </main>
-
-      {/* Settings Modal */}
-      <SettingsModal isOpen={settingsOpen} onClose={() => setSettingsOpen(false)} />
     </div>
   );
 };

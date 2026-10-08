@@ -12,7 +12,6 @@ import { DashboardPage } from './pages/DashboardPage';
 import { ExceptionQueuePage } from './pages/ExceptionQueuePage';
 import { ExceptionDetailPage } from './pages/ExceptionDetailPage';
 import { AnalyticsPage } from './pages/AnalyticsPage';
-import { SettingsPage } from './pages/SettingsPage';
 import { AppShell } from './components/layout/AppShell';
 
 // ── Protected Route ───────────────────────────────────────────
@@ -66,7 +65,6 @@ function App() {
                   <Route path="/exceptions" element={<ExceptionQueuePage />} />
                   <Route path="/exceptions/:id" element={<ExceptionDetailPage />} />
                   <Route path="/analytics" element={<AnalyticsPage />} />
-                  <Route path="/settings" element={<SettingsPage />} />
                   <Route path="/" element={<Navigate to="/dashboard" replace />} />
                   <Route path="*" element={
                     <div style={{ textAlign: 'center', padding: 80, color: 'var(--text-muted)' }}>
