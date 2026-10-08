@@ -175,8 +175,8 @@ export const DashboardPage: React.FC = () => {
           <div className="card-header">
             <span className="card-title"><TrendingUp size={16} /> Exception Trend (6 Months)</span>
           </div>
-          <ResponsiveContainer width="100%" height={220}>
-            <AreaChart data={TREND_DATA} margin={{ top: 5, right: 10, left: -10, bottom: 0 }}>
+          <ResponsiveContainer width="100%" height={210}>
+            <AreaChart data={TREND_DATA} margin={{ top: 5, right: 10, left: -15, bottom: 0 }}>
               <defs>
                 <linearGradient id="gradOpen" x1="0" y1="0" x2="0" y2="1">
                   <stop offset="5%" stopColor="#2563eb" stopOpacity={0.3} />
@@ -192,10 +192,10 @@ export const DashboardPage: React.FC = () => {
                 </linearGradient>
               </defs>
               <CartesianGrid strokeDasharray="3 3" stroke="var(--border-subtle)" />
-              <XAxis dataKey="month" />
-              <YAxis />
+              <XAxis dataKey="month" tick={{ fontSize: 11 }} />
+              <YAxis tick={{ fontSize: 11 }} width={30} />
               <Tooltip content={<CustomTooltip />} />
-              <Legend />
+              <Legend wrapperStyle={{ fontSize: 11, paddingTop: 6 }} />
               <Area type="monotone" dataKey="open" name="Open" stroke="#2563eb" fill="url(#gradOpen)" strokeWidth={2} />
               <Area type="monotone" dataKey="resolved" name="Resolved" stroke="#22c55e" fill="url(#gradResolved)" strokeWidth={2} />
               <Area type="monotone" dataKey="critical" name="Critical" stroke="#ef4444" fill="url(#gradCritical)" strokeWidth={2} />
@@ -208,14 +208,14 @@ export const DashboardPage: React.FC = () => {
           <div className="card-header">
             <span className="card-title"><Activity size={16} /> Exceptions by Status</span>
           </div>
-          <ResponsiveContainer width="100%" height={220}>
+          <ResponsiveContainer width="100%" height={210}>
             <PieChart>
               <Pie
                 data={STATUS_DATA}
                 cx="50%"
-                cy="50%"
-                innerRadius={55}
-                outerRadius={85}
+                cy="46%"
+                innerRadius={45}
+                outerRadius={70}
                 paddingAngle={3}
                 dataKey="value"
               >
@@ -227,6 +227,7 @@ export const DashboardPage: React.FC = () => {
               <Legend
                 iconType="circle"
                 iconSize={8}
+                wrapperStyle={{ fontSize: 11, paddingTop: 4 }}
                 formatter={(v) => <span style={{ fontSize: 11, color: 'var(--text-secondary)' }}>{v}</span>}
               />
             </PieChart>
@@ -241,11 +242,11 @@ export const DashboardPage: React.FC = () => {
           <div className="card-header">
             <span className="card-title"><AlertTriangle size={16} /> Exceptions by Priority</span>
           </div>
-          <ResponsiveContainer width="100%" height={200}>
-            <BarChart data={PRIORITY_DATA} layout="vertical" margin={{ top: 0, right: 20, left: 10, bottom: 0 }}>
+          <ResponsiveContainer width="100%" height={190}>
+            <BarChart data={PRIORITY_DATA} layout="vertical" margin={{ top: 0, right: 15, left: -5, bottom: 0 }}>
               <CartesianGrid strokeDasharray="3 3" stroke="var(--border-subtle)" horizontal={false} />
-              <XAxis type="number" />
-              <YAxis type="category" dataKey="name" width={65} />
+              <XAxis type="number" tick={{ fontSize: 10 }} />
+              <YAxis type="category" dataKey="name" width={56} tick={{ fontSize: 10 }} />
               <Tooltip content={<CustomTooltip />} />
               <Bar dataKey="value" name="Count" radius={[0, 4, 4, 0]}>
                 {PRIORITY_DATA.map((entry, i) => <Cell key={i} fill={entry.color} />)}
@@ -259,11 +260,11 @@ export const DashboardPage: React.FC = () => {
           <div className="card-header">
             <span className="card-title"><DollarSign size={16} /> Financial Exposure by Priority</span>
           </div>
-          <ResponsiveContainer width="100%" height={200}>
-            <BarChart data={EXPOSURE_BY_PRIORITY} margin={{ top: 0, right: 20, left: 10, bottom: 0 }}>
+          <ResponsiveContainer width="100%" height={190}>
+            <BarChart data={EXPOSURE_BY_PRIORITY} margin={{ top: 0, right: 10, left: 0, bottom: 0 }}>
               <CartesianGrid strokeDasharray="3 3" stroke="var(--border-subtle)" />
-              <XAxis dataKey="name" />
-              <YAxis tickFormatter={(v) => `£${(v / 1000).toFixed(0)}k`} />
+              <XAxis dataKey="name" tick={{ fontSize: 10 }} />
+              <YAxis tickFormatter={(v) => `£${(v / 1000).toFixed(0)}k`} width={44} tick={{ fontSize: 10 }} />
               <Tooltip content={<CustomTooltip />} />
               <Bar dataKey="exposure" name="Exposure (£)" radius={[4, 4, 0, 0]}>
                 {EXPOSURE_BY_PRIORITY.map((entry, i) => <Cell key={i} fill={entry.color} />)}
@@ -280,11 +281,11 @@ export const DashboardPage: React.FC = () => {
           <div className="card-header">
             <span className="card-title"><Clock size={16} /> Exceptions by Ageing</span>
           </div>
-          <ResponsiveContainer width="100%" height={200}>
-            <BarChart data={AGEING_DATA} margin={{ top: 0, right: 20, left: 10, bottom: 0 }}>
+          <ResponsiveContainer width="100%" height={190}>
+            <BarChart data={AGEING_DATA} margin={{ top: 0, right: 10, left: -15, bottom: 0 }}>
               <CartesianGrid strokeDasharray="3 3" stroke="var(--border-subtle)" />
-              <XAxis dataKey="bucket" />
-              <YAxis />
+              <XAxis dataKey="bucket" tick={{ fontSize: 10 }} />
+              <YAxis tick={{ fontSize: 10 }} width={30} />
               <Tooltip content={<CustomTooltip />} />
               <Bar dataKey="count" name="Count" radius={[4, 4, 0, 0]}>
                 {AGEING_DATA.map((entry, i) => <Cell key={i} fill={entry.color} />)}
@@ -298,11 +299,11 @@ export const DashboardPage: React.FC = () => {
           <div className="card-header">
             <span className="card-title"><DollarSign size={16} /> Exposure by Supplier (Top 5)</span>
           </div>
-          <ResponsiveContainer width="100%" height={200}>
-            <BarChart data={SUPPLIER_EXPOSURE} layout="vertical" margin={{ top: 0, right: 20, left: 10, bottom: 0 }}>
+          <ResponsiveContainer width="100%" height={190}>
+            <BarChart data={SUPPLIER_EXPOSURE} layout="vertical" margin={{ top: 0, right: 15, left: -5, bottom: 0 }}>
               <CartesianGrid strokeDasharray="3 3" stroke="var(--border-subtle)" horizontal={false} />
-              <XAxis type="number" tickFormatter={(v) => `£${(v / 1000).toFixed(0)}k`} />
-              <YAxis type="category" dataKey="name" width={100} style={{ fontSize: 10 }} />
+              <XAxis type="number" tickFormatter={(v) => `£${(v / 1000).toFixed(0)}k`} tick={{ fontSize: 10 }} />
+              <YAxis type="category" dataKey="name" width={75} tick={{ fontSize: 9 }} />
               <Tooltip content={<CustomTooltip />} />
               <Bar dataKey="value" name="Exposure (£)" fill="#2563eb" radius={[0, 4, 4, 0]} />
             </BarChart>
@@ -316,7 +317,9 @@ export const DashboardPage: React.FC = () => {
           <span className="card-title"><AlertTriangle size={16} /> Top Open Exceptions – Immediate Attention</span>
           <button className="btn btn-ghost btn-sm" onClick={() => navigate('/exceptions')}>View All →</button>
         </div>
-        <div className="table-wrapper">
+
+        {/* Desktop Table */}
+        <div className="table-wrapper desktop-only-table">
           <table>
             <thead>
               <tr>
@@ -359,6 +362,50 @@ export const DashboardPage: React.FC = () => {
                 })}
             </tbody>
           </table>
+        </div>
+
+        {/* Mobile-Friendly Exception Cards */}
+        <div className="mobile-only-cards">
+          {MOCK_EXCEPTIONS.filter(e => e.status !== 'Resolved' && e.status !== 'Rejected')
+            .sort((a, b) => b.riskScore - a.riskScore)
+            .slice(0, 5)
+            .map((exc) => {
+              const supplier = MOCK_SUPPLIERS.find(s => s.id === exc.supplierId);
+              return (
+                <div
+                  key={exc.id}
+                  className="mobile-record-card"
+                  onClick={() => navigate(`/exceptions/${exc.id}`)}
+                >
+                  <div className="mobile-record-header">
+                    <span className="mobile-record-id">{exc.id}</span>
+                    <span className={`badge badge-priority-${exc.priority.toLowerCase()}`}>
+                      {exc.priority}
+                    </span>
+                  </div>
+                  <div className="mobile-record-title">{exc.exceptionType}</div>
+                  <div className="mobile-record-supplier">
+                    <span>🏢 {supplier?.name ?? exc.supplierId}</span>
+                  </div>
+                  <div className="mobile-record-footer">
+                    <div className="mobile-record-exposure">
+                      <span style={{ color: 'var(--text-muted)', fontSize: 11, marginRight: 4 }}>Exposure:</span>
+                      <strong>{formatCurrency(exc.financialExposure, exc.currency)}</strong>
+                    </div>
+                    <div className="mobile-record-meta">
+                      <span style={{ color: exc.ageingDays > 30 ? 'var(--color-error)' : 'var(--text-muted)' }}>
+                        {exc.ageingDays}d
+                      </span>
+                      {exc.slaBreached ? (
+                        <span className="badge badge-status-rejected">Breached</span>
+                      ) : (
+                        <span className="badge badge-status-resolved">On Track</span>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              );
+            })}
         </div>
       </div>
     </div>

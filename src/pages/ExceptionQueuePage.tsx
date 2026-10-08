@@ -218,7 +218,7 @@ export const ExceptionQueuePage: React.FC = () => {
           </div>
         ) : (
           <>
-            <div className="table-wrapper">
+            <div className="table-wrapper desktop-only-table">
               <table>
                 <thead>
                   <tr>
@@ -337,6 +337,64 @@ export const ExceptionQueuePage: React.FC = () => {
                   })}
                 </tbody>
               </table>
+            </div>
+
+            {/* Mobile-Friendly Cards View */}
+            <div className="mobile-only-cards" style={{ padding: 12 }}>
+              {filteredResult.data.length === 0 ? (
+                <div className="table-empty">
+                  <div className="table-empty-icon">📋</div>
+                  <div>No exceptions match your filters</div>
+                  <button className="btn btn-secondary btn-sm" style={{ marginTop: 12 }} onClick={resetFilters}>Clear filters</button>
+                </div>
+              ) : (
+                filteredResult.data.map((exc) => {
+                  const supplier = MOCK_SUPPLIERS.find(s => s.id === exc.supplierId);
+                  return (
+                    <div
+                      key={exc.id}
+                      className="mobile-record-card"
+                      onClick={() => navigate(`/exceptions/${exc.id}`)}
+                    >
+                      <div className="mobile-record-header">
+                        <span className="mobile-record-id">{exc.id}</span>
+                        <div style={{ display: 'flex', gap: 6, alignItems: 'center' }}>
+                          <span className={`badge badge-priority-${exc.priority.toLowerCase()}`}>
+                            {exc.priority}
+                          </span>
+                          <span className={`badge badge-status-${exc.status.replace(/ /g, '-').toLowerCase()}`}>
+                            {exc.status}
+                          </span>
+                        </div>
+                      </div>
+
+                      <div className="mobile-record-title">{exc.exceptionType}</div>
+                      
+                      <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 12, color: 'var(--text-secondary)' }}>
+                        <span>🏢 {supplier?.name ?? exc.supplierId}</span>
+                        <span style={{ fontFamily: 'monospace', fontSize: 11 }}>PO: {exc.poId}</span>
+                      </div>
+
+                      <div className="mobile-record-footer">
+                        <div className="mobile-record-exposure">
+                          <span style={{ color: 'var(--text-muted)', fontSize: 11, marginRight: 4 }}>Exposure:</span>
+                          <strong>{exc.financialExposure > 0 ? formatCurrency(exc.financialExposure, exc.currency) : '£0.00'}</strong>
+                        </div>
+                        <div className="mobile-record-meta">
+                          <span style={{ fontSize: 11, color: exc.ageingDays > 30 ? 'var(--color-error)' : 'var(--text-muted)' }}>
+                            {exc.ageingDays}d
+                          </span>
+                          {exc.slaBreached ? (
+                            <span className="badge badge-status-rejected">Breached</span>
+                          ) : (
+                            <span className="badge badge-status-resolved">On Track</span>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+                  );
+                })
+              )}
             </div>
 
             {/* Pagination */}

@@ -31,7 +31,7 @@ const CustomTooltip = ({ active, payload, label }: any) => {
 const byType = (() => {
   const map: Record<string, number> = {};
   MOCK_EXCEPTIONS.forEach(e => { map[e.exceptionType] = (map[e.exceptionType] ?? 0) + 1; });
-  return Object.entries(map).map(([name, value]) => ({ name: name.length > 25 ? name.slice(0, 23) + '…' : name, value })).sort((a, b) => b.value - a.value);
+  return Object.entries(map).map(([name, value]) => ({ name: name.length > 16 ? name.slice(0, 14) + '…' : name, value })).sort((a, b) => b.value - a.value);
 })();
 
 const bySupplierExposure = (() => {
@@ -41,7 +41,7 @@ const bySupplierExposure = (() => {
     const n = s?.name ?? e.supplierId;
     map[n] = (map[n] ?? 0) + e.financialExposure;
   });
-  return Object.entries(map).map(([name, value]) => ({ name: name.length > 18 ? name.slice(0, 16) + '…' : name, value })).sort((a, b) => b.value - a.value);
+  return Object.entries(map).map(([name, value]) => ({ name: name.length > 14 ? name.slice(0, 12) + '…' : name, value })).sort((a, b) => b.value - a.value);
 })();
 
 const byStatus = Object.entries(
@@ -120,11 +120,11 @@ export const AnalyticsPage: React.FC = () => {
       <div className="charts-grid" style={{ marginBottom: 16 }}>
         <div className="card">
           <div className="card-header"><span className="card-title"><BarChart3 size={16} /> Exceptions by Type</span></div>
-          <ResponsiveContainer width="100%" height={260}>
-            <BarChart data={byType} layout="vertical" margin={{ top: 0, right: 20, left: 10, bottom: 0 }}>
+          <ResponsiveContainer width="100%" height={240}>
+            <BarChart data={byType} layout="vertical" margin={{ top: 0, right: 15, left: -5, bottom: 0 }}>
               <CartesianGrid strokeDasharray="3 3" stroke="var(--border-subtle)" horizontal={false} />
-              <XAxis type="number" />
-              <YAxis type="category" dataKey="name" width={140} style={{ fontSize: 10 }} />
+              <XAxis type="number" tick={{ fontSize: 10 }} />
+              <YAxis type="category" dataKey="name" width={80} style={{ fontSize: 9 }} />
               <Tooltip content={<CustomTooltip />} />
               <Bar dataKey="value" name="Count" fill="#8b5cf6" radius={[0,4,4,0]} />
             </BarChart>
@@ -133,11 +133,11 @@ export const AnalyticsPage: React.FC = () => {
 
         <div className="card">
           <div className="card-header"><span className="card-title"><DollarSign size={16} /> Exposure by Supplier</span></div>
-          <ResponsiveContainer width="100%" height={260}>
-            <BarChart data={bySupplierExposure} layout="vertical" margin={{ top: 0, right: 20, left: 10, bottom: 0 }}>
+          <ResponsiveContainer width="100%" height={240}>
+            <BarChart data={bySupplierExposure} layout="vertical" margin={{ top: 0, right: 15, left: -5, bottom: 0 }}>
               <CartesianGrid strokeDasharray="3 3" stroke="var(--border-subtle)" horizontal={false} />
-              <XAxis type="number" tickFormatter={(v) => `£${(v/1000).toFixed(0)}k`} />
-              <YAxis type="category" dataKey="name" width={120} style={{ fontSize: 10 }} />
+              <XAxis type="number" tickFormatter={(v) => `£${(v/1000).toFixed(0)}k`} tick={{ fontSize: 10 }} />
+              <YAxis type="category" dataKey="name" width={75} style={{ fontSize: 9 }} />
               <Tooltip content={<CustomTooltip />} />
               <Bar dataKey="value" name="Exposure" fill="#f97316" radius={[0,4,4,0]} />
             </BarChart>
