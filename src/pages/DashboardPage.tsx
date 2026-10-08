@@ -9,7 +9,7 @@ import {
 } from 'recharts';
 import {
   AlertTriangle, TrendingUp, Clock, DollarSign,
-  CheckCircle, Zap, Target, RefreshCw, Activity,
+  CheckCircle, Zap, Target, RefreshCw, Activity, ChevronRight,
 } from 'lucide-react';
 import { useExceptionStore } from '../store/exceptionStore';
 import { useAuthStore } from '../store/authStore';
@@ -371,13 +371,18 @@ export const DashboardPage: React.FC = () => {
                 >
                   <div className="mobile-record-header">
                     <span className="mobile-record-id">{exc.id}</span>
-                    <span className={`badge badge-priority-${exc.priority.toLowerCase()}`}>
-                      {exc.priority}
-                    </span>
+                    <div className="mobile-record-badges">
+                      <span className={`badge badge-priority-${exc.priority.toLowerCase()}`}>
+                        {exc.priority}
+                      </span>
+                      <ChevronRight size={15} color="var(--text-muted)" />
+                    </div>
                   </div>
                   <div className="mobile-record-title">{exc.exceptionType}</div>
-                  <div className="mobile-record-supplier">
-                    <span>🏢 {supplier?.name ?? exc.supplierId}</span>
+                  <div className="mobile-record-row">
+                    <span className="truncate" style={{ fontSize: 12, color: 'var(--text-secondary)' }}>
+                      🏢 {supplier?.name ?? exc.supplierId}
+                    </span>
                   </div>
                   <div className="mobile-record-footer">
                     <div className="mobile-record-exposure">

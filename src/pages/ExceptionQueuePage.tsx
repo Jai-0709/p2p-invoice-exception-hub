@@ -126,19 +126,21 @@ export const ExceptionQueuePage: React.FC = () => {
           />
         </div>
 
-        <button
-          id="filter-toggle"
-          className={`btn btn-secondary btn-sm ${showFilters ? 'btn-primary' : ''}`}
-          onClick={() => setShowFilters(!showFilters)}
-        >
-          <Filter size={13} /> Filters {hasActiveFilters ? '●' : ''}
-        </button>
-
-        {hasActiveFilters && (
-          <button className="btn btn-ghost btn-sm" onClick={resetFilters}>
-            <X size={13} /> Clear
+        <div className="filter-bar-controls">
+          <button
+            id="filter-toggle"
+            className={`btn btn-secondary btn-sm ${showFilters ? 'btn-primary' : ''}`}
+            onClick={() => setShowFilters(!showFilters)}
+          >
+            <Filter size={13} /> Filters {hasActiveFilters ? '●' : ''}
           </button>
-        )}
+
+          {hasActiveFilters && (
+            <button className="btn btn-ghost btn-sm" onClick={resetFilters}>
+              <X size={13} /> Clear
+            </button>
+          )}
+        </div>
 
         {/* Quick status filters */}
         <div className="queue-quick-status">
@@ -218,7 +220,7 @@ export const ExceptionQueuePage: React.FC = () => {
       )}
 
       {/* Table */}
-      <div className="card" style={{ padding: 0 }}>
+      <div className="queue-table-card">
         {isLoading ? (
           <div className="loading-overlay">
             <div className="spinner spinner-lg" />
@@ -348,7 +350,7 @@ export const ExceptionQueuePage: React.FC = () => {
             </div>
 
             {/* Mobile-Friendly Cards View */}
-            <div className="mobile-only-cards" style={{ padding: 12 }}>
+            <div className="mobile-only-cards">
               {filteredResult.data.length === 0 ? (
                 <div className="table-empty">
                   <div className="table-empty-icon">📋</div>
@@ -367,27 +369,35 @@ export const ExceptionQueuePage: React.FC = () => {
                     >
                       <div className="mobile-record-header">
                         <span className="mobile-record-id">{exc.id}</span>
-                        <div style={{ display: 'flex', gap: 6, alignItems: 'center' }}>
+                        <div className="mobile-record-badges">
                           <span className={`badge badge-priority-${exc.priority.toLowerCase()}`}>
                             {exc.priority}
                           </span>
                           <span className={`badge badge-status-${exc.status.replace(/ /g, '-').toLowerCase()}`}>
                             {exc.status}
                           </span>
-                          <ChevronRight size={16} color="var(--text-muted)" style={{ marginLeft: 2 }} />
+                          <ChevronRight size={15} color="var(--text-muted)" />
                         </div>
                       </div>
 
                       <div className="mobile-record-title">{exc.exceptionType}</div>
 
-                      <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 12, color: 'var(--text-secondary)' }}>
-                        <span className="truncate">🏢 {supplier?.name ?? exc.supplierId}</span>
-                        <span style={{ fontFamily: 'monospace', fontSize: 11, flexShrink: 0, marginLeft: 8 }}>PO: {exc.poId}</span>
+                      <div className="mobile-record-row">
+                        <span className="truncate" style={{ minWidth: 0, flex: '1 1 auto', fontSize: 12, color: 'var(--text-secondary)' }}>
+                          🏢 {supplier?.name ?? exc.supplierId}
+                        </span>
+                        <span style={{ fontFamily: 'monospace', fontSize: 11, flexShrink: 0, marginLeft: 8, color: 'var(--text-secondary)' }}>
+                          PO: {exc.poId}
+                        </span>
                       </div>
 
-                      <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 11, color: 'var(--text-muted)' }}>
-                        <span>Plant {exc.plant} · {exc.companyCode}</span>
-                        <span>👤 {owner?.name ?? 'Unassigned'}</span>
+                      <div className="mobile-record-row">
+                        <span className="truncate" style={{ fontSize: 11, color: 'var(--text-muted)', minWidth: 0, flex: '1 1 auto' }}>
+                          Plant {exc.plant} · {exc.companyCode}
+                        </span>
+                        <span className="truncate" style={{ fontSize: 11, color: 'var(--text-muted)', flexShrink: 0, marginLeft: 8 }}>
+                          👤 {owner?.name ?? 'Unassigned'}
+                        </span>
                       </div>
 
                       <div className="mobile-record-footer">
