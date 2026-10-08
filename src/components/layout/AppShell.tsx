@@ -181,31 +181,71 @@ export const AppShell: React.FC<{ children: React.ReactNode }> = ({ children }) 
             </button>
 
             {notifOpen && (
-              <div className="notification-panel">
-                <div style={{ padding: '12px 16px', borderBottom: '1px solid var(--border-subtle)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                  <span style={{ fontWeight: 600, fontSize: 13 }}>Notifications</span>
-                  <span style={{ fontSize: 11, color: 'var(--text-muted)' }}>{unreadNotifs} unread</span>
-                </div>
-                {NOTIFICATIONS.map((n) => (
-                  <div
-                    key={n.id}
-                    className={`notification-item ${n.unread ? 'unread' : ''}`}
-                    onClick={() => setNotifOpen(false)}
-                  >
-                    <div style={{
-                      width: 8, height: 8, borderRadius: '50%', flexShrink: 0, marginTop: 4,
-                      background: n.severity === 'error' ? 'var(--color-error)' :
-                        n.severity === 'warning' ? 'var(--color-warning)' :
-                        n.severity === 'success' ? 'var(--color-success)' : 'var(--color-info)',
-                    }} />
-                    <div>
-                      <div style={{ fontSize: 12, fontWeight: 600, color: 'var(--text-primary)' }}>{n.title}</div>
-                      <div style={{ fontSize: 11, color: 'var(--text-secondary)', marginTop: 2, lineHeight: 1.4 }}>{n.message}</div>
-                      <div style={{ fontSize: 10, color: 'var(--text-muted)', marginTop: 4 }}>{formatDateTime(n.time)}</div>
+              <>
+                <div
+                  className="notification-backdrop"
+                  onClick={() => setNotifOpen(false)}
+                />
+                <div className="notification-panel">
+                  <div className="notification-panel-header" style={{
+                    padding: '12px 16px',
+                    borderBottom: '1px solid var(--border-subtle)',
+                    display: 'flex',
+                    justifyContent: 'space-between',
+                    alignItems: 'center',
+                    background: '#ffffff',
+                    position: 'sticky',
+                    top: 0,
+                    zIndex: 2,
+                  }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                      <span style={{ fontWeight: 700, fontSize: 13, color: 'var(--text-primary)' }}>Notifications</span>
+                      {unreadNotifs > 0 && (
+                        <span style={{
+                          background: '#eff6ff',
+                          color: 'var(--brand-secondary)',
+                          fontSize: 10,
+                          fontWeight: 700,
+                          padding: '1px 7px',
+                          borderRadius: 999,
+                          border: '1px solid #bfdbfe',
+                        }}>
+                          {unreadNotifs} unread
+                        </span>
+                      )}
                     </div>
+                    <button
+                      className="btn btn-ghost btn-sm"
+                      onClick={() => setNotifOpen(false)}
+                      aria-label="Close notifications"
+                      style={{ padding: '4px 6px', height: 'auto', minWidth: 'unset', color: 'var(--text-muted)' }}
+                    >
+                      <X size={15} />
+                    </button>
                   </div>
-                ))}
-              </div>
+                  <div className="notification-panel-body" style={{ overflowY: 'auto' }}>
+                    {NOTIFICATIONS.map((n) => (
+                      <div
+                        key={n.id}
+                        className={`notification-item ${n.unread ? 'unread' : ''}`}
+                        onClick={() => setNotifOpen(false)}
+                      >
+                        <div style={{
+                          width: 8, height: 8, borderRadius: '50%', flexShrink: 0, marginTop: 4,
+                          background: n.severity === 'error' ? 'var(--color-error)' :
+                            n.severity === 'warning' ? 'var(--color-warning)' :
+                            n.severity === 'success' ? 'var(--color-success)' : 'var(--color-info)',
+                        }} />
+                        <div style={{ flex: 1, minWidth: 0 }}>
+                          <div style={{ fontSize: 12, fontWeight: 600, color: 'var(--text-primary)' }}>{n.title}</div>
+                          <div style={{ fontSize: 11, color: 'var(--text-secondary)', marginTop: 2, lineHeight: 1.4 }}>{n.message}</div>
+                          <div style={{ fontSize: 10, color: 'var(--text-muted)', marginTop: 4 }}>{formatDateTime(n.time)}</div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </>
             )}
           </div>
 
