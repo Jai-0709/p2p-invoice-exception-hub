@@ -4,6 +4,7 @@
 
 import React, { useEffect, useState, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
+import toast from 'react-hot-toast';
 import {
   ArrowLeft, AlertTriangle, CheckCircle, XCircle, Clock, User, FileText,
   Package, Truck, BarChart2, Zap, MessageSquare, History, Shield,
@@ -61,6 +62,8 @@ export const ExceptionDetailPage: React.FC = () => {
   const [aiStatus, setAiStatus] = useState<'idle' | 'loaded'>('idle');
   const [mobileTab, setMobileTab] = useState<'match' | 'docs' | 'ai' | 'activity' | 'all'>('match');
   const [isMobile, setIsMobile] = useState(() => typeof window !== 'undefined' ? window.innerWidth < 900 : false);
+  const [isEditingAI, setIsEditingAI] = useState(false);
+  const [editedRecommendation, setEditedRecommendation] = useState('');
 
   const commentRef = useRef<HTMLTextAreaElement>(null);
 
@@ -145,9 +148,66 @@ export const ExceptionDetailPage: React.FC = () => {
     setSelectedOwnerId('');
   };
 
-  const handleAIAction = (action: 'accept' | 'reject' | 'edit') => {
-    updateException(exc.id, { aiRecommendationStatus: action === 'accept' ? 'Accepted' : action === 'reject' ? 'Rejected' : 'Edited' });
+  const handleAIAccept = () => {
+    if (!aiInsight) return;
+    updateException(exc.id, {
+      aiRecommendationStatus: 'Accepted',
+      recommendedAction: aiInsight.recommendation,
+    });
+    doAddComment(
+      exc.id,
+      currentUser!.id,
+      `🤖 AI Recommendation Accepted:\n"${aiInsight.recommendation}"`
+    );
     selectException(exc.id);
+    toast.success('Recommendation accepted! Action recorded in activity.');
+  };
+
+  const handleAIReject = () => {
+    if (!aiInsight) return;
+    updateException(exc.id, {
+      aiRecommendationStatus: 'Rejected',
+    });
+    doAddComment(
+      exc.id,
+      currentUser!.id,
+      `❌ AI Recommendation Rejected:\n"${aiInsight.recommendation}"`
+    );
+    selectException(exc.id);
+    toast.error('Recommendation rejected and recorded in activity.');
+  };
+
+  const handleAIEditStart = () => {
+    if (!aiInsight) return;
+    setEditedRecommendation(aiInsight.recommendation);
+    setIsEditingAI(true);
+  };
+
+  const handleAIEditSave = () => {
+    if (!aiInsight || !editedRecommendation.trim()) return;
+    const trimmed = editedRecommendation.trim();
+    setAiInsight({ ...aiInsight, recommendation: trimmed });
+    updateException(exc.id, {
+      aiRecommendationStatus: 'Edited',
+      recommendedAction: trimmed,
+    });
+    doAddComment(
+      exc.id,
+      currentUser!.id,
+      `✏️ AI Recommendation Edited & Saved:\n"${trimmed}"`
+    );
+    selectException(exc.id);
+    setIsEditingAI(false);
+    toast.success('Recommendation edited and applied!');
+  };
+
+  const handleAIReset = () => {
+    updateException(exc.id, {
+      aiRecommendationStatus: 'Pending',
+    });
+    selectException(exc.id);
+    setIsEditingAI(false);
+    toast('Recommendation status reset.');
   };
 
   // ── Render Section Elements ──────────────────────────────────
@@ -468,9 +528,59 @@ export const ExceptionDetailPage: React.FC = () => {
             <div className="ai-text">{aiInsight.explanation}</div>
           </div>
           <div className="ai-section">
-            <div className="ai-section-label">Recommended Action</div>
-            <div className="ai-text" style={{ color: 'var(--text-primary)', fontWeight: 600 }}>{aiInsight.recommendation}</div>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 6 }}>
+              <div className="ai-section-label" style={{ marginBottom: 0 }}>Recommended Action</div>
+              {!isEditingAI && (
+                <button
+                  className="btn btn-ghost btn-sm"
+                  onClick={handleAIEditStart}
+                  style={{ fontSize: 11, padding: '2px 8px', gap: 4, color: 'var(--brand-secondary)' }}
+                >
+                  <Edit3 size={11} /> Edit Action
+                </button>
+              )}
+            </div>
+
+            {isEditingAI ? (
+              <div style={{ background: '#ffffff', padding: 12, borderRadius: 8, border: '1px solid var(--brand-secondary)' }}>
+                <textarea
+                  className="form-textarea"
+                  value={editedRecommendation}
+                  onChange={(e) => setEditedRecommendation(e.target.value)}
+                  rows={3}
+                  placeholder="Edit the recommended resolution action..."
+                  style={{ fontSize: 12, lineHeight: 1.4, marginBottom: 8, width: '100%', resize: 'vertical' }}
+                />
+                <div style={{ display: 'flex', gap: 8, justifyContent: 'flex-end' }}>
+                  <button
+                    className="btn btn-secondary btn-sm"
+                    onClick={() => setIsEditingAI(false)}
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    className="btn btn-primary btn-sm"
+                    onClick={handleAIEditSave}
+                    disabled={!editedRecommendation.trim()}
+                  >
+                    <CheckCircle size={12} /> Save &amp; Apply
+                  </button>
+                </div>
+              </div>
+            ) : (
+              <div className="ai-text" style={{
+                color: 'var(--text-primary)',
+                fontWeight: 600,
+                padding: '10px 12px',
+                background: 'var(--bg-surface)',
+                borderRadius: 8,
+                borderLeft: '3px solid var(--brand-secondary)',
+              }}>
+                {aiInsight.recommendation}
+              </div>
+            )}
           </div>
+
           <div className="ai-section">
             <div className="ai-section-label">Evidence Correlated</div>
             <ul className="ai-evidence-list">
@@ -482,6 +592,7 @@ export const ExceptionDetailPage: React.FC = () => {
               ))}
             </ul>
           </div>
+
           <div className="ai-confidence">
             <span style={{ fontSize: 11, color: 'var(--text-muted)' }}>Confidence</span>
             <div style={{ flex: 1, height: 6, background: 'var(--bg-surface)', borderRadius: 3, overflow: 'hidden' }}>
@@ -489,16 +600,86 @@ export const ExceptionDetailPage: React.FC = () => {
             </div>
             <span style={{ fontSize: 11, fontWeight: 700, color: 'var(--brand-secondary)' }}>{aiInsight.confidence}%</span>
           </div>
-          <div className="ai-actions">
-            <button id="ai-accept-btn" className="btn btn-success btn-sm" onClick={() => handleAIAction('accept')}>
-              <ThumbsUp size={12} /> Accept Recommendation
-            </button>
-            <button id="ai-edit-btn" className="btn btn-secondary btn-sm" onClick={() => handleAIAction('edit')}>
-              <Edit3 size={12} /> Edit
-            </button>
-            <button id="ai-reject-btn" className="btn btn-danger btn-sm" onClick={() => handleAIAction('reject')}>
-              <ThumbsDown size={12} /> Reject
-            </button>
+
+          <div className="ai-actions" style={{ marginTop: 12 }}>
+            {exc.aiRecommendationStatus === 'Accepted' ? (
+              <div style={{
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'space-between',
+                width: '100%',
+                padding: '10px 14px',
+                background: '#f0fdf4',
+                border: '1px solid #bbf7d0',
+                borderRadius: 8,
+                color: '#15803d',
+                fontSize: 12,
+                fontWeight: 600,
+              }}>
+                <span style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+                  <CheckCircle size={15} color="#16a34a" /> Recommendation Accepted &amp; Recorded in Activity
+                </span>
+                <button
+                  className="btn btn-ghost btn-sm"
+                  onClick={handleAIReset}
+                  style={{ fontSize: 11, padding: '2px 8px', color: 'var(--text-secondary)' }}
+                >
+                  Change
+                </button>
+              </div>
+            ) : exc.aiRecommendationStatus === 'Rejected' ? (
+              <div style={{
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'space-between',
+                width: '100%',
+                padding: '10px 14px',
+                background: '#fef2f2',
+                border: '1px solid #fecaca',
+                borderRadius: 8,
+                color: '#b91c1c',
+                fontSize: 12,
+                fontWeight: 600,
+              }}>
+                <span style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+                  <XCircle size={15} color="#dc2626" /> Recommendation Rejected &amp; Recorded in Activity
+                </span>
+                <button
+                  className="btn btn-ghost btn-sm"
+                  onClick={handleAIReset}
+                  style={{ fontSize: 11, padding: '2px 8px', color: 'var(--text-secondary)' }}
+                >
+                  Re-evaluate
+                </button>
+              </div>
+            ) : (
+              <>
+                <button
+                  id="ai-accept-btn"
+                  className="btn btn-success btn-sm"
+                  onClick={handleAIAccept}
+                  style={{ flex: 1, justifyContent: 'center' }}
+                >
+                  <ThumbsUp size={13} /> Accept Recommendation
+                </button>
+                <button
+                  id="ai-edit-btn"
+                  className="btn btn-secondary btn-sm"
+                  onClick={handleAIEditStart}
+                  style={{ flex: 1, justifyContent: 'center' }}
+                >
+                  <Edit3 size={13} /> Edit
+                </button>
+                <button
+                  id="ai-reject-btn"
+                  className="btn btn-danger btn-sm"
+                  onClick={handleAIReject}
+                  style={{ flex: 1, justifyContent: 'center' }}
+                >
+                  <ThumbsDown size={13} /> Reject
+                </button>
+              </>
+            )}
           </div>
         </>
       )}
